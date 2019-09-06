@@ -49,9 +49,7 @@ public class Settings {
      */
     public static String getTEST_DBConnection(){
         intializeProperties();
-        String server = props.getProperty("dbtest.server") != null ? props.getProperty("dbtest.server") : props.getProperty("db.server");
-        String port = props.getProperty("dbtest.port") != null ? props.getProperty("dbtest.port") : props.getProperty("db.port");
-        return String.format("jdbc:mysql://%s:%s/%s",server,port,props.getProperty("dbtest.database"));
+        return String.format("jdbc:mysql://%s:%s/%s",props.getProperty("db.server"),props.getProperty("db.port"),props.getProperty("db.testdatabase"));
     }
 
      private static void intializeProperties() {

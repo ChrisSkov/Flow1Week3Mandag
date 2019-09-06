@@ -2,9 +2,11 @@ package rest;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import entities.RenameMe;
-import utils.EMF_Creator;
-import facades.FacadeExample;
+
+import entities.Movie;
+
+import facades.MovieFacade;
+
 import javax.persistence.EntityManagerFactory;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -14,10 +16,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import utils.EMF_Creator;
 
 //Todo Remove or change relevant parts before ACTUAL use
-@Path("xxx")
-public class RenameMeResource {
+@Path("movie")
+public class MovieResource {
 
     private static final EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory(
                 "pu",
@@ -25,7 +28,7 @@ public class RenameMeResource {
                 "dev",
                 "ax2",
                 EMF_Creator.Strategy.CREATE);
-    private static final FacadeExample FACADE =  FacadeExample.getFacadeExample(EMF);
+    private static final MovieFacade FACADE =  MovieFacade.getMovieFacade(EMF);
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
             
     @GET
@@ -33,25 +36,56 @@ public class RenameMeResource {
     public String demo() {
         return "{\"msg\":\"Hello World\"}";
     }
+    
     @Path("count")
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    public String getRenameMeCount() {
-        long count = FACADE.getRenameMeCount();
-        //System.out.println("--------------->"+count);
+    public String getMovieCount() {
+        long count = FACADE.getMovieCount();
         return "{\"count\":"+count+"}";  //Done manually so no need for a DTO
     }
+    
+    @Path("populate")
+    @GET
+    @Produces({MediaType.APPLICATION_JSON})
+    public String populate() {
+        FACADE.populateMovies();
+        return "{\"msg\":\"done!\"}";
+    }
+
+    @Path("all")
+    @GET
+    @Produces({MediaType.APPLICATION_JSON})
+    public String getAll() {
+        return GSON.toJson(FACADE.getAllMovies());
+    }
+
+    @Path("/{id}")
+    @GET
+    @Produces({MediaType.APPLICATION_JSON})
+    public String getById(@PathParam("id") long id) {
+        return GSON.toJson(FACADE.getMovieById(id));
+    }
+
+    @Path("name/{name}")
+    @GET
+    @Produces({MediaType.APPLICATION_JSON})
+    public String getByName(@PathParam("name") String name) {
+        return GSON.toJson(FACADE.getMoviesByName(name));
+    }
+    
 
     @POST
     @Consumes({MediaType.APPLICATION_JSON})
-    public void create(RenameMe entity) {
-        throw new UnsupportedOperationException();
+    public String create(Movie movie) {
+        Movie result = FACADE.createMovie(movie);
+        return GSON.toJson(result);
     }
     
     @PUT
     @Path("/{id}")
     @Consumes({MediaType.APPLICATION_JSON})
-    public void update(RenameMe entity, @PathParam("id") int id) {
+    public void update(Movie entity, @PathParam("id") int id) {
         throw new UnsupportedOperationException();
     }
 }
